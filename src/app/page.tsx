@@ -5,7 +5,6 @@ import { fixedLinks, instagramHandle } from "@/config/links";
 import { Highlight } from "@/components/Highlight";
 import { LinkButton } from "@/components/LinkButton";
 import { PromoButton } from "@/components/PromoButton";
-import { BrandBackground } from "@/components/BrandBackground";
 import { getPublicPromos } from "@/lib/promos";
 import { spYear } from "@/lib/time";
 import logo from "../../public/brand/logo.png";
@@ -47,38 +46,39 @@ export default function Home() {
   const links = [...fixedLinks].sort((a, b) => a.order - b.order);
 
   return (
-    <>
-      <BrandBackground />
-      <main className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-5 pt-12 pb-8 sm:pt-16">
-        <header className="flex flex-col items-center text-center">
-          <h1 className="sr-only">Set Up | Escola de inglês para brasileiros</h1>
-          <Image
-            src={logo}
-            alt="Set Up"
-            priority
-            sizes="220px"
-            className="h-auto w-[200px] sm:w-[220px]"
-          />
-          <p className="mt-6 text-[13px] font-semibold tracking-[0.04em] uppercase">
-            Escola de inglês para brasileiros
-          </p>
-          <p className="mt-4 text-[27px] leading-[1.18] font-extrabold tracking-[-0.035em] text-balance sm:text-[30px]">
-            O inglês começa aqui e leva você para <Highlight>onde você quiser</Highlight>
-          </p>
-        </header>
+    <div className="min-h-dvh bg-shell-deep sm:px-6 sm:py-10">
+      <div className="brand-card mx-auto flex min-h-dvh w-full max-w-[580px] flex-col sm:min-h-[calc(100dvh-5rem)] sm:rounded-[32px]">
+        <main className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-5 pt-12 pb-8 sm:pt-14">
+          <header className="flex flex-col items-center text-center">
+            <h1 className="sr-only">Set Up | Escola de inglês para brasileiros</h1>
+            <Image
+              src={logo}
+              alt="Set Up"
+              priority
+              sizes="220px"
+              className="h-auto w-[200px] sm:w-[220px]"
+            />
+            <p className="mt-6 text-[13px] font-semibold tracking-[0.04em] uppercase">
+              Escola de inglês para brasileiros
+            </p>
+            <p className="mt-4 text-[27px] leading-[1.18] font-extrabold tracking-[-0.035em] text-balance sm:text-[30px]">
+              O inglês começa aqui e leva você para <Highlight>onde você quiser</Highlight>
+            </p>
+          </header>
 
-        <Suspense fallback={null}>
-          <Promos />
-        </Suspense>
+          <Suspense fallback={null}>
+            <Promos />
+          </Suspense>
 
-        <nav aria-label="Contatos" className="mt-7 flex flex-col gap-3">
-          {links.map((link) => (
-            <LinkButton key={link.url} link={link} />
-          ))}
-        </nav>
+          <nav aria-label="Contatos" className="mt-7 flex flex-col gap-3">
+            {links.map((link) => (
+              <LinkButton key={link.url} link={link} />
+            ))}
+          </nav>
 
-        <Footer />
-      </main>
-    </>
+          <Footer />
+        </main>
+      </div>
+    </div>
   );
 }

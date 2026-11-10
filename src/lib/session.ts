@@ -1,5 +1,5 @@
 import "server-only";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   SESSION_COOKIE,
@@ -16,9 +16,22 @@ export class UnauthorizedError extends Error {
   }
 }
 
+/**
+ * Lê o cookie de sessão direto do cabeçalho do pedido.
+ * (Usar cookies() aqui dispara um erro interno do Next 16 em modo dev
+ * quando a página é redesenhada logo depois de uma server action.)
+ */
+async function readSessionCookie(): Promise<string | undefined> {
+  const header = (await headers()).get("cookie") ?? "";
+  for (const part of header.split(";")) {
+    const [name, ...rest] = part.trim().split("=");
+    if (name === SESSION_COOKIE) return rest.join("=");
+  }
+  return undefined;
+}
+
 export async function isAuthenticated(): Promise<boolean> {
-  const token = (await cookies()).get(SESSION_COOKIE)?.value;
-  return verifySessionToken(token);
+  return verifySessionToken(await readSessionCookie());
 }
 
 /** Para server actions: sem sessão válida, lança 401 e não toca em dado nenhum. */

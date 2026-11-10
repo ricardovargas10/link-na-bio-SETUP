@@ -4,7 +4,7 @@ import { SESSION_COOKIE, getAdminPath, verifySessionToken } from "@/lib/session-
 const PRIVATE_HEADERS: Record<string, string> = {
   "X-Robots-Tag": "noindex, nofollow, noarchive",
   "Cache-Control": "no-store, max-age=0",
-  "Referrer-Policy": "no-referrer",
+  "Referrer-Policy": "same-origin",
 };
 
 function withPrivateHeaders(res: NextResponse): NextResponse {

@@ -11,8 +11,13 @@ export const redis: Redis | null =
 /**
  * Sem Redis configurado, no ambiente de desenvolvimento os dados ficam na memória
  * (somem ao reiniciar). Em produção o Redis é obrigatório.
+ * LOCAL_MEMORY_STORE=1 permite testar o build de produção no seu computador
+ * (`npm run build && npm start`); essa opção é ignorada na Vercel.
  */
-export const memoryFallback = !redis && process.env.NODE_ENV !== "production";
+export const memoryFallback =
+  !redis &&
+  (process.env.NODE_ENV !== "production" ||
+    (process.env.LOCAL_MEMORY_STORE === "1" && !process.env.VERCEL));
 
 type MemoryStore = Map<string, unknown>;
 const g = globalThis as unknown as { __setupMemoryStore?: MemoryStore };

@@ -19,7 +19,7 @@ const WHATSAPP_MESSAGE =
 
 export const fixedLinks: FixedLink[] = [
   {
-    label: "Fale com a gente no WhatsApp",
+    label: "Chamar no WhatsApp",
     url: `https://wa.me/5511915467152?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`,
     icon: "whatsapp",
     order: 1,

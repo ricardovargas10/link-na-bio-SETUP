@@ -1,7 +1,8 @@
 import "server-only";
 import { z } from "zod";
+import { cacheLife, cacheTag } from "next/cache";
 import { memoryFallback, memoryStore, redis, withTimeout } from "./redis";
-import { promoSchema, promoStatus, sortPromos, type Promo } from "./promo-types";
+import { promoSchema, promoStatus, sortPromos, type Promo, type PromoStatus } from "./promo-types";
 
 export const PROMOS_KEY = "setup:promos";
 export const PROMOS_TAG = "promos";
@@ -63,4 +64,21 @@ export async function writePromos(list: Promo[]): Promise<void> {
 
 export function visiblePromos(list: Promo[], now: number): Promo[] {
   return sortPromos(list).filter((p) => promoStatus(p, now) === "ativa");
+}
+
+/**
+ * Promoções que aparecem na página pública agora. Fica em cache e é refeita
+ * a cada 60 s (para respeitar o agendamento) ou na hora em que o painel salva.
+ */
+export async function getPublicPromos(): Promise<Promo[]> {
+  "use cache";
+  cacheTag(PROMOS_TAG);
+  cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
+  return visiblePromos(await readPromosSafe(), Date.now());
+}
+
+/** Para o painel: todas as promoções com o status calculado agora. */
+export async function readPromosWithStatus(): Promise<(Promo & { status: PromoStatus })[]> {
+  const now = Date.now();
+  return (await readPromos()).map((p) => ({ ...p, status: promoStatus(p, now) }));
 }

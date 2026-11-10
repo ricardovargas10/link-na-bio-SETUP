@@ -1,24 +1,17 @@
 import Image from "next/image";
-import { cacheLife, cacheTag } from "next/cache";
+import { Suspense } from "react";
+import { cacheLife } from "next/cache";
 import { fixedLinks, instagramHandle } from "@/config/links";
 import { Highlight } from "@/components/Highlight";
 import { LinkButton } from "@/components/LinkButton";
 import { PromoButton } from "@/components/PromoButton";
 import { BrandBackground } from "@/components/BrandBackground";
-import { PROMOS_TAG, readPromosSafe, visiblePromos } from "@/lib/promos";
+import { getPublicPromos } from "@/lib/promos";
 import { spYear } from "@/lib/time";
 import logo from "../../public/brand/logo.png";
 
-/**
- * Promoções ativas e dentro do período. Fica em cache e é refeita a cada 60s
- * (para respeitar o agendamento) ou na hora em que o painel salva algo.
- */
 async function Promos() {
-  "use cache";
-  cacheTag(PROMOS_TAG);
-  cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
-
-  const promos = visiblePromos(await readPromosSafe(), Date.now());
+  const promos = await getPublicPromos();
   if (promos.length === 0) return null;
 
   return (
@@ -74,7 +67,9 @@ export default function Home() {
           </p>
         </header>
 
-        <Promos />
+        <Suspense fallback={null}>
+          <Promos />
+        </Suspense>
 
         <nav aria-label="Contatos" className="mt-7 flex flex-col gap-3">
           {links.map((link) => (

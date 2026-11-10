@@ -38,7 +38,7 @@ LOCAL_MEMORY_STORE=1 npm start
 npm run hash-password
 ```
 
-O script pede a senha sem mostrar na tela (mínimo de 10 caracteres) e imprime:
+O script pede a senha sem mostrar na tela (mínimo de 10 caracteres). Se o terminal não aceitar a digitação escondida (acontece em alguns terminais do Windows), use `npm run hash-password -- --visivel` e limpe a tela depois com `cls`. Ele imprime:
 
 - o hash puro, para colar na Vercel em `ADMIN_PASSWORD_HASH`;
 - a linha para o `.env.local`, com os `$` protegidos (`\$`). Sem a proteção, o Next.js tenta ler `$2b`, `$12`… como variáveis.

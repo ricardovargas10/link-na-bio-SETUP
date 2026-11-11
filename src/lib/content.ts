@@ -199,7 +199,9 @@ export type PublicContent = PublicContentShape;
 export async function getPublicContent(): Promise<PublicContent> {
   "use cache";
   cacheTag(CONTENT_TAG);
-  cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
+  // stale de 5 min deixa o conteúdo já pronto no HTML (sem versão provisória);
+  // revalidate de 60 s respeita o agendamento; salvar no painel atualiza na hora.
+  cacheLife({ stale: 300, revalidate: 60, expire: 3600 });
   const now = Date.now();
   let page = DEFAULT_PAGE;
   let buttons = defaultButtons();

@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Suspense } from "react";
 import { cacheLife } from "next/cache";
 import { Highlight } from "@/components/Highlight";
 import { LinkCard } from "@/components/LinkCard";
@@ -8,9 +7,6 @@ import { ClickTracker } from "@/components/ClickTracker";
 import { BrandBackground } from "@/components/BrandBackground";
 import { getPublicContent } from "@/lib/content";
 import {
-  DEFAULT_PAGE,
-  DEFAULT_SOCIALS,
-  defaultButtons,
   renderFooter,
   splitHeadline,
   type PublicContentShape,
@@ -101,8 +97,6 @@ function PageView({ content, year }: { content: PublicContentShape; year: number
   );
 }
 
-const FALLBACK: PublicContentShape = { page: DEFAULT_PAGE, buttons: defaultButtons(), socials: DEFAULT_SOCIALS };
-
 export default function Home() {
   return (
     <>
@@ -110,9 +104,8 @@ export default function Home() {
       {/* Blocos espalhados na altura da tela; com muitos botões, a página rola. */}
       <main className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col items-stretch justify-between gap-6 px-5 pt-16 pb-12 text-center sm:gap-8 sm:pt-20 sm:pb-14">
         <h1 className="sr-only">Set Up | Escola de inglês para brasileiros</h1>
-        <Suspense fallback={<PageView content={FALLBACK} year={2026} />}>
-          <Content />
-        </Suspense>
+        {/* Conteúdo em cache: entra pronto no HTML, sem versão provisória. */}
+        <Content />
       </main>
       <ClickTracker />
     </>

@@ -46,23 +46,12 @@ export async function verifySessionToken(token: string | undefined): Promise<boo
 }
 
 /**
- * Caminho secreto do painel (ex.: "/painel-7f3k9q2x").
- * Precisa ser um único trecho com pelo menos 8 letras/números/hífens.
- * Se estiver ausente ou inválido, o painel fica desligado (tudo dá 404).
+ * Endereço do painel. Fixo no código, a pedido do cliente (não usa mais a
+ * variável ADMIN_PATH). Para trocar, mude aqui: um trecho só, com letras,
+ * números, "-" ou "_", e diferente de "/admin".
  */
+export const ADMIN_PATH = "/admin-setup";
+
 export function getAdminPath(): string | null {
-  let raw = process.env.ADMIN_PATH?.trim().replace(/^["']+|["']+$/g, "").trim();
-  if (!raw) return null;
-  // Aceita também o endereço inteiro colado (https://site.com/painel-xyz).
-  if (/^https?:\/\//i.test(raw)) {
-    try {
-      raw = new URL(raw).pathname;
-    } catch {
-      return null;
-    }
-  }
-  const path = "/" + raw.replace(/^\/+|\/+$/g, "");
-  if (!/^\/[A-Za-z0-9_-]{8,64}$/.test(path)) return null;
-  if (path.toLowerCase() === "/admin") return null;
-  return path;
+  return ADMIN_PATH;
 }

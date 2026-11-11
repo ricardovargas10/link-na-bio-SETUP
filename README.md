@@ -3,7 +3,7 @@
 Página de links da bio do Instagram da Set Up English School (@setup.english), com um painel privado para criar botões de promoção.
 
 - Página pública: `/`
-- Painel: no endereço secreto definido em `ADMIN_PATH` (não existe link para ele em lugar nenhum)
+- Painel: `/admin-setup` (fixo no código, em `src/lib/session-token.ts`; não existe link para ele no site)
 
 ---
 
@@ -21,7 +21,7 @@ cp .env.example .env.local   # e preencha (veja abaixo)
 npm run dev
 ```
 
-Abra http://localhost:3000. O painel fica em `http://localhost:3000<ADMIN_PATH>`.
+Abra http://localhost:3000. O painel fica em `http://localhost:3000/admin-setup`.
 
 Sem as variáveis do Redis, o modo `dev` guarda as promoções **na memória** (somem ao reiniciar). Para testar o build de produção no seu computador sem Redis:
 
@@ -56,7 +56,6 @@ Use um segredo diferente em cada ambiente. Trocar o segredo derruba todas as ses
 1. **Importar o repositório:** em vercel.com → *Add New → Project* → escolha este repositório. O `vercel.json` já define o framework como Next.js.
 2. **Banco (Upstash Redis):** no projeto da Vercel → aba *Storage* (ou *Marketplace*) → *Upstash* → *Upstash for Redis* → plano gratuito → crie o banco e **conecte ao projeto** (marque Production, Preview e Development). A integração cria sozinha `KV_REST_API_URL`/`KV_REST_API_TOKEN` (ou `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN`). O código aceita os dois nomes.
 3. **Variáveis:** em *Settings → Environment Variables*, cadastre:
-   - `ADMIN_PATH`: ex. `/painel-7f3k9q2x` (um trecho só, 8 a 64 letras/números/`-`/`_`, nunca `/admin`)
    - `ADMIN_USERNAME`
    - `ADMIN_PASSWORD_HASH`: o hash puro do `npm run hash-password`
    - `SESSION_SECRET`: 32 caracteres ou mais
@@ -71,15 +70,15 @@ Use um segredo diferente em cada ambiente. Trocar o segredo derruba todas as ses
 | Link do formulário (editável no painel, chave `setup:settings`) | `src/lib/settings.ts` |
 | Página pública | `src/app/page.tsx` (promoções em cache, refeitas a cada 60 s ou na hora em que o painel salva) |
 | Botão de promoção e animações | `src/components/PromoButton.tsx` e `src/app/globals.css` |
-| Endereço secreto, 404 no `/admin`, `X-Robots-Tag`, 401 em escrita sem sessão | `src/proxy.ts` |
+| Endereço do painel, 404 no `/admin`, `X-Robots-Tag`, 401 em escrita sem sessão | `src/proxy.ts` |
 | Login, sessão, rate limit | `src/lib/auth.ts`, `src/lib/session*.ts`, `src/lib/ratelimit.ts` |
 | Banco (chave `setup:promos`) | `src/lib/promos.ts`, `src/lib/redis.ts` |
 | Validação (zod) | `src/lib/promo-types.ts` |
-| Painel | `src/app/admin/*` (só acessível pelo `ADMIN_PATH`) |
+| Painel | `src/app/admin/*` (só acessível por `/admin-setup`) |
 
 Segurança em resumo:
 
-- o painel só existe no caminho secreto, e `/admin` dá 404;
+- o painel só existe em `/admin-setup`, e `/admin` dá 404;
 - toda página do painel tem `noindex, nofollow` na meta tag e no cabeçalho, nada sobre o painel no `robots.txt` e não há sitemap;
 - a senha só existe como hash bcrypt;
 - a comparação é em tempo constante, com mensagem de erro genérica;
@@ -97,7 +96,7 @@ Se o banco estiver vazio ou fora do ar, a página pública mostra só os botões
 
 ### Entrar
 
-1. Abra o endereço do painel que você recebeu (guarde nos favoritos do celular; ele não aparece em lugar nenhum do site).
+1. Abra o endereço do site + `/admin-setup` (guarde nos favoritos do celular).
 2. Digite o usuário e a senha e toque em **Entrar**.
 3. A entrada vale por 8 horas. Depois disso, é só entrar de novo.
 4. Se errar a senha 5 vezes, o painel bloqueia por 15 minutos. Espere e tente de novo.

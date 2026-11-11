@@ -1,9 +1,11 @@
 import "server-only";
 import { Redis } from "@upstash/redis";
 
-// A integração da Upstash na Vercel pode criar qualquer um dos dois pares.
-const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+import { getRedisRestToken, getRedisRestUrl } from "./redis-env";
+
+// A integração da Upstash na Vercel pode criar os nomes KV_* ou UPSTASH_*, com ou sem prefixo.
+const url = getRedisRestUrl();
+const token = getRedisRestToken();
 
 export const redis: Redis | null =
   url && token ? new Redis({ url, token, retry: { retries: 1 } }) : null;

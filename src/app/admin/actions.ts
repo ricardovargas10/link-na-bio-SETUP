@@ -8,6 +8,7 @@ import { checkCredentials } from "@/lib/auth";
 import { consumeLoginAttempt, resetLoginAttempts } from "@/lib/ratelimit";
 import { endSession, requireAdmin, startSession } from "@/lib/session";
 import { getAdminPath, isSessionConfigured } from "@/lib/session-token";
+import { missingConfig } from "@/lib/admin-credentials";
 import { PROMOS_TAG, readPromos, writePromos } from "@/lib/promos";
 import { LIMITS, isAllowedUrl, normalizeUrl, promoInputSchema, type Promo } from "@/lib/promo-types";
 import { writeSettings, readSettings } from "@/lib/settings";
@@ -46,7 +47,10 @@ function refreshPublicPage() {
 
 export async function loginAction(_prev: LoginState, fd: FormData): Promise<LoginState> {
   const base = getAdminPath();
-  if (!base || !isSessionConfigured()) return { error: "Painel indisponível no momento." };
+  if (!base || !isSessionConfigured()) {
+    const missing = missingConfig();
+    return { error: `Painel indisponível no momento${missing ? ` (${missing})` : ""}.` };
+  }
 
   const ip = await clientIp();
   const limit = await consumeLoginAttempt(ip);

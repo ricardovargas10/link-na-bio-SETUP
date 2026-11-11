@@ -4,6 +4,7 @@
  */
 import { createHash } from "node:crypto";
 import { adminPasswordHash, adminUsername } from "@/config/admin";
+import { getRedisRestToken } from "./redis-env";
 
 /** Usuário do painel: o do arquivo src/config/admin.ts; se vazio, a variável ADMIN_USERNAME. */
 export function getAdminUsername(): string {
@@ -24,9 +25,16 @@ export function getAdminPasswordHash(): string {
 export function getSessionSecret(): string | null {
   const explicit = process.env.SESSION_SECRET?.trim();
   if (explicit && explicit.length >= 32) return explicit;
-  const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  const redisToken = getRedisRestToken();
   if (redisToken) {
     return createHash("sha256").update(`setup-admin-session:v1:${redisToken}`).digest("base64url");
   }
+  return null;
+}
+
+/** Para a mensagem do login: o que está faltando (sem revelar nenhum valor). */
+export function missingConfig(): string | null {
+  if (!getAdminUsername() || !getAdminPasswordHash()) return "falta definir usuário e senha";
+  if (!getSessionSecret()) return "o site não está recebendo as chaves do banco Upstash";
   return null;
 }

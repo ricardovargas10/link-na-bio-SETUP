@@ -3,24 +3,24 @@
  * Nunca registre o token, o segredo ou o hash em log.
  */
 import { SignJWT, jwtVerify } from "jose";
+import { getAdminUsername, getSessionSecret } from "./admin-credentials";
 
 export const SESSION_COOKIE = "setup_admin";
 export const SESSION_MAX_AGE = 8 * 60 * 60; // 8 horas
 const AUDIENCE = "setup-admin";
 
 function secretKey(): Uint8Array | null {
-  const s = process.env.SESSION_SECRET;
-  if (!s || s.length < 32) return null;
-  return new TextEncoder().encode(s);
+  const s = getSessionSecret();
+  return s ? new TextEncoder().encode(s) : null;
 }
 
 export function isSessionConfigured(): boolean {
-  return secretKey() !== null && !!process.env.ADMIN_USERNAME;
+  return secretKey() !== null && !!getAdminUsername();
 }
 
 export async function createSessionToken(username: string): Promise<string> {
   const key = secretKey();
-  if (!key) throw new Error("SESSION_SECRET ausente ou curto");
+  if (!key) throw new Error("Segredo da sessão indisponível");
   return new SignJWT({})
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(username)
@@ -32,7 +32,7 @@ export async function createSessionToken(username: string): Promise<string> {
 
 export async function verifySessionToken(token: string | undefined): Promise<boolean> {
   const key = secretKey();
-  const username = process.env.ADMIN_USERNAME;
+  const username = getAdminUsername();
   if (!token || !key || !username) return false;
   try {
     const { payload } = await jwtVerify(token, key, {

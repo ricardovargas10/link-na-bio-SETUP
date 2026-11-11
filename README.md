@@ -32,35 +32,28 @@ LOCAL_MEMORY_STORE=1 npm start
 
 (`LOCAL_MEMORY_STORE` é ignorado na Vercel; lá o Redis é obrigatório.)
 
-### Gerar o hash da senha do painel
+### Definir usuário e senha do painel
 
 ```bash
-npm run hash-password
+npm run definir-senha        # no Windows: npm.cmd run definir-senha
 ```
 
-O script pede a senha sem mostrar na tela (mínimo de 10 caracteres). Se o terminal não aceitar a digitação escondida (acontece em alguns terminais do Windows), use `npm run hash-password -- --visivel` e limpe a tela depois com `cls`. Ele imprime:
+O comando pergunta o usuário e a senha e grava em `src/config/admin.ts` só o hash bcrypt (a senha nunca é salva). Depois é só fazer commit e push.
 
-- o hash puro, para colar na Vercel em `ADMIN_PASSWORD_HASH`;
-- a linha para o `.env.local`, com os `$` protegidos (`\$`). Sem a proteção, o Next.js tenta ler `$2b`, `$12`… como variáveis.
-
-### Gerar o `SESSION_SECRET`
+O segredo que assina o cookie de sessão é derivado sozinho da chave do Upstash Redis (`KV_REST_API_TOKEN`/`UPSTASH_REDIS_REST_TOKEN`), então não precisa cadastrar nada. Se quiser um segredo próprio, cadastre `SESSION_SECRET` (32+ caracteres) na Vercel; gere com:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 ```
 
-Use um segredo diferente em cada ambiente. Trocar o segredo derruba todas as sessões abertas.
+(As variáveis `ADMIN_USERNAME` e `ADMIN_PASSWORD_HASH` ainda funcionam, mas só quando `src/config/admin.ts` estiver vazio.)
 
 ### Publicar na Vercel
 
 1. **Importar o repositório:** em vercel.com → *Add New → Project* → escolha este repositório. O `vercel.json` já define o framework como Next.js.
 2. **Banco (Upstash Redis):** no projeto da Vercel → aba *Storage* (ou *Marketplace*) → *Upstash* → *Upstash for Redis* → plano gratuito → crie o banco e **conecte ao projeto** (marque Production, Preview e Development). A integração cria sozinha `KV_REST_API_URL`/`KV_REST_API_TOKEN` (ou `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN`). O código aceita os dois nomes.
-3. **Variáveis:** em *Settings → Environment Variables*, cadastre:
-   - `ADMIN_USERNAME`
-   - `ADMIN_PASSWORD_HASH`: o hash puro do `npm run hash-password`
-   - `SESSION_SECRET`: 32 caracteres ou mais
-4. **Redeploy:** *Deployments → … → Redeploy* para as variáveis valerem.
-5. **Subdomínio (opcional):** *Settings → Domains → Add*, por exemplo `links.setupenglish.com.br`. No painel de DNS do domínio, crie um registro **CNAME** `links` → `cname.vercel-dns.com`. Se quiser, cadastre também `NEXT_PUBLIC_SITE_URL` com o endereço final (usado na imagem de compartilhamento).
+3. **Variáveis:** nenhuma obrigatória além das do banco, que a integração cria sozinha.
+4. **Subdomínio (opcional):** *Settings → Domains → Add*, por exemplo `links.setupenglish.com.br`. No painel de DNS do domínio, crie um registro **CNAME** `links` → `cname.vercel-dns.com`. Se quiser, cadastre também `NEXT_PUBLIC_SITE_URL` com o endereço final (usado na imagem de compartilhamento).
 
 ### Como funciona por dentro
 

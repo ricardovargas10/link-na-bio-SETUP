@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { AdminNav } from "./AdminNav";
+import { logoutAction } from "./actions";
 
 // O painel sempre depende da sessão; não precisa de navegação instantânea.
 export const instant = false;
@@ -19,6 +21,9 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div className="min-h-dvh bg-shell text-raisin">
       <div className="mx-auto w-full max-w-xl px-4 pt-6 pb-16">
+        <Suspense fallback={null}>
+          <AdminNav logout={logoutAction} />
+        </Suspense>
         <Suspense fallback={<p className="py-10 text-center font-medium">Carregando…</p>}>
           {children}
         </Suspense>

@@ -59,14 +59,13 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 
 | Assunto | Onde |
 |---|---|
-| Botões fixos (formulário, WhatsApp, e-mail, Instagram) e texto "Sobre a Set Up" | `src/config/links.ts` |
-| Link do formulário (editável no painel, chave `setup:settings`) | `src/lib/settings.ts` |
-| Página pública | `src/app/page.tsx` (promoções em cache, refeitas a cada 60 s ou na hora em que o painel salva) |
-| Botão de promoção e animações | `src/components/PromoButton.tsx` e `src/app/globals.css` |
+| Conteúdo editável (botões, redes, textos, logo, cliques) | `src/lib/content.ts`, `src/lib/content-types.ts` (chaves `setup:buttons`, `setup:socials`, `setup:page`, `setup:media:*`, `setup:clicks`) |
+| Ícones da biblioteca | `src/lib/icon-names.ts`, `src/components/BrandIcon.tsx` (Tabler Icons) |
+| Página pública | `src/app/page.tsx` (conteúdo em cache, refeito a cada 60 s ou na hora em que o painel salva) |
+| Botão, estilos e animações | `src/components/LinkCard.tsx` e `src/app/globals.css` |
 | Endereço do painel, 404 no `/admin`, `X-Robots-Tag`, 401 em escrita sem sessão | `src/proxy.ts` |
 | Login, sessão, rate limit | `src/lib/auth.ts`, `src/lib/session*.ts`, `src/lib/ratelimit.ts` |
-| Banco (chave `setup:promos`) | `src/lib/promos.ts`, `src/lib/redis.ts` |
-| Validação (zod) | `src/lib/promo-types.ts` |
+| Validação (zod) | `src/lib/content-types.ts` |
 | Painel | `src/app/admin/*` (só acessível por `/admin-setup`) |
 
 Segurança em resumo:
@@ -89,51 +88,29 @@ Se o banco estiver vazio ou fora do ar, a página pública mostra só os botões
 
 ### Entrar
 
-1. Abra o endereço do site + `/admin-setup` (guarde nos favoritos do celular).
-2. Digite o usuário e a senha e toque em **Entrar**.
-3. A entrada vale por 8 horas. Depois disso, é só entrar de novo.
-4. Se errar a senha 5 vezes, o painel bloqueia por 15 minutos. Espere e tente de novo.
+1. Abra **https://link-setup-english.vercel.app/admin-setup** (guarde nos favoritos do celular).
+2. Digite o usuário e a senha e toque em **Entrar**. A entrada vale por 8 horas.
+3. Se errar a senha 5 vezes, o painel bloqueia por 15 minutos.
 
-### Criar uma promoção
+O painel tem 3 abas: **Botões**, **Redes** e **Página**.
 
-1. Toque em **Nova promoção**.
-2. Preencha:
-   - **Título** (obrigatório): a frase principal do botão.
-   - **Subtítulo** (opcional): uma frase menor embaixo.
-   - **Selo** (opcional): uma etiqueta pequena no canto, como "Novo" ou "Vagas abertas".
-   - **Cor do botão**: laranja, azul, lilás ou roxo.
-   - **Link**: para onde o botão leva. Pode ser um site (`https://...`), um WhatsApp (`wa.me/55...`) ou um e-mail (`mailto:...`).
-3. Em **Como vai ficar na página** você vê o botão do jeito que vai aparecer, com o brilho.
-4. Toque em **Salvar**. A página muda na hora.
+### Botões
 
-### Agendar datas
+- **Novo botão:** escreva o texto, cole o link (site com `https://`, WhatsApp com `wa.me/55...`, e-mail com `mailto:...`, telefone com `tel:...`), escolha o ícone, o estilo e a animação. A parte de cima mostra como vai ficar.
+- **Ícone:** escolha um da lista (YouTube, Instagram, TikTok, Twitch, Kick, Threads, X, Discord, LivePix, WhatsApp...) ou toque em **Enviar imagem** para usar uma sua (PNG, JPG, WEBP ou SVG, até 600 KB).
+- **Estilo:** branco (padrão) ou uma cor de destaque.
+- **Animação:** brilho, pulso ou os dois, para destacar uma promoção ou novidade.
+- **Selo:** etiqueta pequena no canto, como "Novo".
+- **Datas:** o botão aparece e some sozinho no horário marcado (horário de Brasília).
+- Na lista: **Ocultar/Mostrar** (sem apagar), **Editar**, **Duplicar** (a cópia nasce oculta), **Excluir** (pede confirmação) e as setas para mudar a ordem. Cada botão mostra quantos cliques recebeu.
 
-Em **Datas**, preencha **Começa em** e/ou **Termina em** (horário de Brasília).
+### Redes
 
-- Antes da data de início, a promoção fica **Agendada** e não aparece.
-- Depois da data de fim, fica **Encerrada** e some sozinha.
-- Sem datas, ela fica no ar enquanto estiver ligada.
+Ícones pequenos lado a lado, embaixo dos botões. Toque em **Nova rede**, escolha o ícone, cole o link e salve. Dá para ocultar, editar, excluir e mudar a ordem. Também mostram os cliques.
 
-A troca acontece em até 1 minuto depois do horário marcado.
+### Página
 
-### Ligar e desligar
+- **Logo:** escolha a imagem e toque em **Salvar este logo**. **Voltar ao logo original** desfaz.
+- **Textos:** texto de cima, o trecho que fica na caixa azul (copie igualzinho do texto de cima), título e texto de baixo e rodapé. No rodapé, `{ano}` vira o ano atual.
 
-Na lista, toque no botão **Ligada / Desligada** de cada promoção. Desligada, ela não aparece na página, mesmo dentro das datas.
-
-### Mudar a ordem
-
-Use as setas **↑** e **↓** de cada promoção. A de cima aparece primeiro na página. Também dá para escolher a **Posição na página** dentro do formulário.
-
-### Editar, duplicar e excluir
-
-- **Editar**: abre o formulário com tudo preenchido.
-- **Duplicar**: cria uma cópia **desligada**, boa para reaproveitar uma campanha.
-- **Excluir**: pede confirmação. Depois de excluída, não dá para recuperar.
-
-### Trocar o link do formulário
-
-No fim da lista de promoções fica o quadro **Link do formulário**. Cole o link novo (por exemplo, do Google Forms) e toque em **Salvar link**. O botão "Preencha o formulário de interesse" da página passa a abrir esse link na hora.
-
-### Sair
-
-Toque em **Sair** no alto da lista, principalmente se estiver usando um aparelho que não é seu.
+Tudo que você salva aparece na página na hora.

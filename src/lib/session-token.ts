@@ -45,12 +45,8 @@ export async function verifySessionToken(token: string | undefined): Promise<boo
   }
 }
 
-/**
- * Endereço do painel. Fixo no código, a pedido do cliente (não usa mais a
- * variável ADMIN_PATH). Para trocar, mude aqui: um trecho só, com letras,
- * números, "-" ou "_", e diferente de "/admin".
- */
-export const ADMIN_PATH = "/admin-setup";
+export { ADMIN_PATH } from "./admin-path";
+import { ADMIN_PATH } from "./admin-path";
 
 export function getAdminPath(): string | null {
   return ADMIN_PATH;

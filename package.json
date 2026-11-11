@@ -11,6 +11,7 @@
     "definir-senha": "node scripts/definir-senha.mjs"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.49.0",
     "@upstash/ratelimit": "^2.2.0",
     "@upstash/redis": "^1.41.0",
     "bcryptjs": "^3.0.3",

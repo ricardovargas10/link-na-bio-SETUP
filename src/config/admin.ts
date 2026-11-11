@@ -8,5 +8,5 @@
  * Se as variáveis ADMIN_USERNAME e ADMIN_PASSWORD_HASH existirem na Vercel,
  * elas são usadas só quando este arquivo estiver vazio.
  */
-export const adminUsername = "";
-export const adminPasswordHash = "";
+export const adminUsername = "admin";
+export const adminPasswordHash = "$2b$12$yEG1zbRORL3xIPAhO78flOvd99HUS8hosuRkFk6mRhMdSmY9d/QPC";

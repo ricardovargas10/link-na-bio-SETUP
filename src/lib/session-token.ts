@@ -51,8 +51,16 @@ export async function verifySessionToken(token: string | undefined): Promise<boo
  * Se estiver ausente ou inválido, o painel fica desligado (tudo dá 404).
  */
 export function getAdminPath(): string | null {
-  const raw = process.env.ADMIN_PATH?.trim();
+  let raw = process.env.ADMIN_PATH?.trim().replace(/^["']+|["']+$/g, "").trim();
   if (!raw) return null;
+  // Aceita também o endereço inteiro colado (https://site.com/painel-xyz).
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      raw = new URL(raw).pathname;
+    } catch {
+      return null;
+    }
+  }
   const path = "/" + raw.replace(/^\/+|\/+$/g, "");
   if (!/^\/[A-Za-z0-9_-]{8,64}$/.test(path)) return null;
   if (path.toLowerCase() === "/admin") return null;

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { isAuthenticated } from "@/lib/session";
 import { getAdminPath } from "@/lib/session-token";
 import { LoginForm } from "./LoginForm";
@@ -6,6 +7,8 @@ import { LoginForm } from "./LoginForm";
 export const instant = false;
 
 export default async function LoginPage() {
+  // Lê o endereço secreto na hora do acesso, nunca no build.
+  await connection();
   const base = getAdminPath();
   if (!base) redirect("/");
   if (await isAuthenticated()) redirect(base);

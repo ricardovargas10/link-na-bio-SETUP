@@ -1,6 +1,7 @@
 import "server-only";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import {
   SESSION_COOKIE,
   SESSION_MAX_AGE,
@@ -41,6 +42,8 @@ export async function requireAdmin(): Promise<void> {
 
 /** Para páginas do painel: sem sessão, manda para o login. Devolve o caminho secreto. */
 export async function requireAdminPage(): Promise<string> {
+  // Lê o endereço secreto na hora do acesso, nunca no build.
+  await connection();
   const base = getAdminPath();
   if (!base) redirect("/");
   if (!(await isAuthenticated())) redirect(`${base}/login`);

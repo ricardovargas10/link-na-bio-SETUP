@@ -67,7 +67,8 @@ Use um segredo diferente em cada ambiente. Trocar o segredo derruba todas as ses
 
 | Assunto | Onde |
 |---|---|
-| Botões fixos (WhatsApp, e-mail, Instagram) | `src/config/links.ts` |
+| Botões fixos (formulário, WhatsApp, e-mail, Instagram) e texto "Sobre a Set Up" | `src/config/links.ts` |
+| Link do formulário (editável no painel, chave `setup:settings`) | `src/lib/settings.ts` |
 | Página pública | `src/app/page.tsx` (promoções em cache, refeitas a cada 60 s ou na hora em que o painel salva) |
 | Botão de promoção e animações | `src/components/PromoButton.tsx` e `src/app/globals.css` |
 | Endereço secreto, 404 no `/admin`, `X-Robots-Tag`, 401 em escrita sem sessão | `src/proxy.ts` |
@@ -136,6 +137,10 @@ Use as setas **↑** e **↓** de cada promoção. A de cima aparece primeiro na
 - **Editar**: abre o formulário com tudo preenchido.
 - **Duplicar**: cria uma cópia **desligada**, boa para reaproveitar uma campanha.
 - **Excluir**: pede confirmação. Depois de excluída, não dá para recuperar.
+
+### Trocar o link do formulário
+
+No fim da lista de promoções fica o quadro **Link do formulário**. Cole o link novo (por exemplo, do Google Forms) e toque em **Salvar link**. O botão "Preencha o formulário de interesse" da página passa a abrir esse link na hora.
 
 ### Sair
 

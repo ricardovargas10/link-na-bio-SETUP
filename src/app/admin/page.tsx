@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowDown, ArrowUp, Copy, Pencil, Plus, Trash2 } from "lucide-react";
 import { requireAdminPage } from "@/lib/session";
 import { readPromosWithStatus } from "@/lib/promos";
+import { DEFAULT_FORM_URL, readSettings } from "@/lib/settings";
 import { COLOR_LABELS, type Promo, type PromoStatus } from "@/lib/promo-types";
 import { formatSp } from "@/lib/time";
 import {
@@ -12,6 +13,7 @@ import {
   togglePromoAction,
 } from "./actions";
 import { ConfirmForm, SubmitButton } from "./ui";
+import { FormUrlForm } from "./FormUrlForm";
 
 const STATUS: Record<PromoStatus, { label: string; className: string; help: string }> = {
   ativa: { label: "No ar", className: "bg-sky", help: "Aparecendo na página agora" },
@@ -46,8 +48,10 @@ export default async function AdminHome() {
 
   let promos: (Promo & { status: PromoStatus })[] = [];
   let loadError = false;
+  let formUrl = DEFAULT_FORM_URL;
   try {
     promos = await readPromosWithStatus();
+    formUrl = (await readSettings()).formUrl;
   } catch {
     loadError = true;
   }
@@ -180,6 +184,14 @@ export default async function AdminHome() {
           })}
         </ol>
       )}
+
+      <section aria-labelledby="config" className="mt-10 rounded-3xl border-2 border-raisin/10 bg-white/80 p-4">
+        <h2 id="config" className="text-[20px] font-extrabold tracking-[-0.02em]">
+          Link do formulário
+        </h2>
+        <p className="mt-1 text-[14px] text-raisin/75">Para onde vai o botão do formulário na página.</p>
+        <FormUrlForm initialUrl={formUrl} />
+      </section>
     </>
   );
 }

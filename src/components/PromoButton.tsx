@@ -23,13 +23,13 @@ export function PromoButton({ title, subtitle, badge, url, color, preview }: Pro
   const inner = (
     <>
       <span aria-hidden className={`promo-ring ${c.ring}`} />
-      <span className={`promo-body min-h-[76px] px-6 py-4 text-center ${c.body}`}>
+      <span className={`promo-body min-h-[68px] px-5 py-3.5 text-center sm:min-h-[76px] sm:px-6 sm:py-4 ${c.body}`}>
         <span aria-hidden className="promo-shine" />
-        <span className="text-[19px] leading-tight font-extrabold tracking-[-0.02em] break-words">
+        <span className="text-[17px] leading-tight font-extrabold sm:text-[19px] tracking-[-0.02em] break-words">
           {title || "Título da promoção"}
         </span>
         {subtitle ? (
-          <span className="mt-1 text-[14px] leading-snug font-medium break-words">{subtitle}</span>
+          <span className="mt-1 text-[13px] leading-snug font-medium break-words sm:text-[14px]">{subtitle}</span>
         ) : null}
       </span>
       {badge ? (

@@ -9,13 +9,15 @@ import { consumeLoginAttempt, resetLoginAttempts } from "@/lib/ratelimit";
 import { endSession, requireAdmin, startSession } from "@/lib/session";
 import { getAdminPath, isSessionConfigured } from "@/lib/session-token";
 import { PROMOS_TAG, readPromos, writePromos } from "@/lib/promos";
-import { LIMITS, promoInputSchema, type Promo } from "@/lib/promo-types";
+import { LIMITS, isAllowedUrl, normalizeUrl, promoInputSchema, type Promo } from "@/lib/promo-types";
+import { writeSettings, readSettings } from "@/lib/settings";
 import { spLocalToIso } from "@/lib/time";
 
 const GENERIC_LOGIN_ERROR = "Usuário ou senha incorretos";
 
 export type LoginState = { error?: string };
 export type SaveState = { error?: string; fieldErrors?: Record<string, string> };
+export type SettingsState = { error?: string; ok?: boolean; savedAt?: number };
 
 async function clientIp(): Promise<string> {
   const h = await headers();
@@ -200,4 +202,25 @@ export async function savePromoAction(_prev: SaveState, fd: FormData): Promise<S
 
   refreshPublicPage();
   redirect(base);
+}
+
+// ---------- Link do formulário ----------
+
+export async function saveFormUrlAction(_prev: SettingsState, fd: FormData): Promise<SettingsState> {
+  await requireAdmin();
+  const raw = text(fd, "formUrl").trim();
+  const url = normalizeUrl(raw);
+  if (!raw) return { error: "Coloque o link do formulário." };
+  if (url.length > LIMITS.url || !isAllowedUrl(url)) {
+    return { error: "Link inválido. Use um endereço que comece com https://" };
+  }
+  try {
+    const current = await readSettings();
+    await writeSettings({ ...current, formUrl: url });
+  } catch {
+    console.error("[painel] falha ao salvar o link do formulário");
+    return { error: "Não foi possível salvar agora. Tente de novo em instantes." };
+  }
+  refreshPublicPage();
+  return { ok: true, savedAt: Date.now() };
 }

@@ -1,4 +1,4 @@
-import { Mail } from "lucide-react";
+import { ClipboardList, Mail } from "lucide-react";
 import type { FixedLinkIcon } from "@/config/links";
 
 type IconProps = { className?: string };
@@ -36,5 +36,6 @@ export function InstagramIcon({ className }: IconProps) {
 export function LinkIcon({ icon, className }: { icon: FixedLinkIcon; className?: string }) {
   if (icon === "whatsapp") return <WhatsAppIcon className={className} />;
   if (icon === "instagram") return <InstagramIcon className={className} />;
+  if (icon === "form") return <ClipboardList className={className} aria-hidden strokeWidth={2} />;
   return <Mail className={className} aria-hidden strokeWidth={2} />;
 }

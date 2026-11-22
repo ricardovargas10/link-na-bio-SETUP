@@ -5,16 +5,13 @@ import { BrandIcon } from "./BrandIcon";
 /**
  * Botão da página.
  * - Padrão: branco, texto escuro, ícone laranja.
- * - Destaque: laranja, texto branco e brilho passando. O texto fica em negrito com 19px
- *   ("texto grande" pelo WCAG), que é o que mantém o contraste do branco sobre o laranja dentro do AA.
+ * - Destaque: laranja, texto branco e brilho passando (mesmo tamanho de texto dos outros).
  */
 export function LinkCard({ label, url, icon, destaque = false }: { label: string; url: string; icon?: IconName; destaque?: boolean }) {
   const body = destaque
     ? "border-sunset bg-sunset text-white"
     : "border-raisin/10 bg-white text-raisin group-hover:border-sunset group-active:border-sunset";
-  const text = destaque
-    ? "text-[19px] leading-snug font-bold tracking-[-0.01em]"
-    : "text-[15px] leading-snug font-semibold tracking-[-0.01em] sm:text-[16px]";
+  const text = "text-[15px] leading-snug font-semibold tracking-[-0.01em] sm:text-[16px]";
 
   return (
     <a href={url} {...externalLinkProps(url)} className="promo group">

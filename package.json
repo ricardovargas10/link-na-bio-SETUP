@@ -12,15 +12,9 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^3.49.0",
-    "@upstash/ratelimit": "^2.2.0",
-    "@upstash/redis": "^1.41.0",
-    "bcryptjs": "^3.0.3",
-    "jose": "^6.2.17",
-    "lucide-react": "^1.71.0",
     "next": "16.4.6",
     "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "zod": "^4.6.7"
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",

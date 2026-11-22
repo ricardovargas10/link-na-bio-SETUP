@@ -34,8 +34,12 @@ export default function Home() {
   return (
     <>
       <BrandBackground />
-      {/* Blocos espalhados na altura da tela: logo, texto, botões, sobre e rodapé. */}
-      <main className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col items-stretch justify-between gap-6 px-5 pt-16 pb-12 text-center sm:gap-8 sm:pt-20 sm:pb-14">
+      {/*
+        Blocos (logo, texto, botões, sobre e rodapé) com espaço fixo entre eles e o conjunto
+        centralizado na altura da tela. O espaço acompanha a altura da tela (7dvh), mas fica
+        entre 40 e 72 px: em telas altas os blocos não se afastam; em telas baixas a página rola.
+      */}
+      <main className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col items-stretch justify-center gap-[clamp(2.5rem,7dvh,4.5rem)] px-5 py-12 text-center sm:py-14">
         <h1 className="sr-only">Set Up | Escola de inglês para brasileiros</h1>
 
         <div className="flex justify-center">
@@ -46,7 +50,7 @@ export default function Home() {
 
         <nav aria-label="Links" className="flex flex-col gap-3 text-left">
           {site.buttons.map((b) => (
-            <LinkCard key={b.label} label={b.label} url={b.url} icon={b.icon} />
+            <LinkCard key={b.label} label={b.label} url={b.url} icon={b.icon} destaque={b.destaque} />
           ))}
         </nav>
 

@@ -47,7 +47,38 @@ body {
   isolation: isolate;
   transition: border-color 160ms ease;
 }
+/* Brilho que atravessa o botão em destaque (só transform, uma passada a cada 3 s). */
+.promo-shine {
+  position: absolute;
+  inset: -20% auto -20% 0;
+  width: 45%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    rgb(255 255 255 / 0) 0%,
+    rgb(255 255 255 / 0.45) 50%,
+    rgb(255 255 255 / 0) 100%
+  );
+  transform: translateX(-160%) skewX(-18deg);
+  animation: promo-shine 3s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes promo-shine {
+  0% {
+    transform: translateX(-160%) skewX(-18deg);
+  }
+  55%,
+  100% {
+    transform: translateX(330%) skewX(-18deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .promo-shine {
+    animation: none;
+    display: none;
+  }
   .promo {
     transition: none;
   }

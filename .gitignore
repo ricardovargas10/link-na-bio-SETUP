@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# build para a Hostinger
+/deploy/
+/setup-config.php
+/php/api/lib/config.local.php
+/php/api/lib/build.php

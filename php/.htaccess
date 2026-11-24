@@ -1,0 +1,52 @@
+# Link na bio da Set Up — regras do servidor (Hostinger / Apache ou LiteSpeed).
+
+Options -Indexes
+DirectoryIndex index.php index.html
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Sempre HTTPS (menos no computador local).
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Imagens enviadas pelo painel: /media/<id>
+  RewriteRule ^media/(img-[a-f0-9]{12})/?$ api/midia.php?id=$1 [L,QSA]
+
+  # Pastas e arquivos internos nunca aparecem.
+  RewriteRule ^api/lib(/|$) - [R=404,L]
+  RewriteRule (^|/)\.(?!well-known/) - [R=404,L]
+</IfModule>
+
+# Arquivos que não devem ser baixados.
+<FilesMatch "\.(sql|md|lock|log|ini|sh|bak)$">
+  Require all denied
+</FilesMatch>
+
+# Ícones gerados no build: são PNG.
+<FilesMatch "^(icon|apple-icon|opengraph-image)\.png$">
+  ForceType image/png
+</FilesMatch>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains" env=HTTPS
+
+  # Painel, API e instalador fora do Google.
+  <If "%{REQUEST_URI} =~ m#^/(admin-setup|api|instalar\.php)#">
+    Header always set X-Robots-Tag "noindex, nofollow, noarchive"
+    Header always set Referrer-Policy "same-origin"
+    Header always set Cache-Control "no-store"
+  </If>
+
+  # Arquivos do build com nome único: cache longo.
+  <If "%{REQUEST_URI} =~ m#^/_next/static/#">
+    Header always set Cache-Control "public, max-age=31536000, immutable"
+  </If>
+</IfModule>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { ADMIN_PATH, login, type LoginState } from "@/lib/api";
 import { SubmitButton } from "../ui";
 import { Alert, inputClass as input } from "../fields";
@@ -9,6 +9,8 @@ import { btnPrimary } from "../styles";
 
 export default function LoginPage() {
   const router = useRouter();
+  // O React limpa o formulário depois de enviar; o usuário fica guardado aqui para não ter que digitar de novo.
+  const [username, setUsername] = useState("");
   const [state, formAction] = useActionState<LoginState, FormData>(async (_prev, fd) => {
     const r = await login(fd);
     if (r.ok) router.replace(`${ADMIN_PATH}/`);
@@ -29,7 +31,17 @@ export default function LoginPage() {
           {state.error ? <Alert kind="error">{state.error}</Alert> : null}
           <label className="block text-[14.5px] font-semibold">
             Usuário
-            <input name="username" autoComplete="username" autoCapitalize="none" spellCheck={false} required maxLength={100} className={input} />
+            <input
+              name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              required
+              maxLength={100}
+              className={input}
+            />
           </label>
           <label className="block text-[14.5px] font-semibold">
             Senha

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ComponentProps, type ReactNode } from "react";
+import { startTransition, useState, type ComponentProps, type FormEvent, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { Loader2, Trash2 } from "lucide-react";
 import { btnDanger, btnSecondary } from "./styles";
@@ -9,9 +9,11 @@ import { btnDanger, btnSecondary } from "./styles";
 export function SubmitButton({
   children,
   pendingText,
+  pending: pendingProp,
   ...props
-}: ComponentProps<"button"> & { pendingText?: ReactNode }) {
-  const { pending } = useFormStatus();
+}: ComponentProps<"button"> & { pendingText?: ReactNode; pending?: boolean }) {
+  const status = useFormStatus();
+  const pending = pendingProp ?? status.pending;
   return (
     <button type="submit" disabled={pending || props.disabled} aria-busy={pending} {...props}>
       {pending && pendingText ? (
@@ -71,4 +73,16 @@ export function ConfirmDelete({
       </div>
     </div>
   );
+}
+
+/**
+ * Envia o formulário sem deixar o React limpá-lo depois (o React apaga os campos,
+ * inclusive a imagem escolhida, mesmo quando o salvamento volta com erro).
+ */
+export function submitWithoutReset(action: (fd: FormData) => void) {
+  return (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    startTransition(() => action(fd));
+  };
 }

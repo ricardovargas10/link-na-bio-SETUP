@@ -26,8 +26,8 @@ ErrorDocument 404 /404.html
   Require all denied
 </FilesMatch>
 
-# Ícones gerados no build: são PNG.
-<FilesMatch "^(icon|apple-icon|opengraph-image)\.png$">
+# Ícones gerados no build: são PNG (com e sem a extensão).
+<FilesMatch "^(icon|apple-icon|opengraph-image)(\.png)?$">
   ForceType image/png
 </FilesMatch>
 

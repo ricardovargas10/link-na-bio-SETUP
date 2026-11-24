@@ -140,4 +140,6 @@ export type AdminData = {
   page: PageData;
   clicks: Record<string, number>;
   visits: VisitStats | null;
+  /** Momento em que o painel carregou estes dados (para saber o que está agendado ou vencido). */
+  loadedAt: number;
 };

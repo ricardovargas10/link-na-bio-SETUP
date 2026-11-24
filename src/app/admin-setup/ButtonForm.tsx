@@ -22,7 +22,7 @@ import { spLocalToIso } from "@/lib/time";
 import { useAdmin } from "./AdminData";
 import { Field, FormAlert, Toggle, inputClass } from "./fields";
 import { choiceToPreview, initialChoice, type IconChoice } from "./IconPicker";
-import { ConfirmDelete, SubmitButton } from "./ui";
+import { ConfirmDelete, SubmitButton, submitWithoutReset } from "./ui";
 import { ColorField } from "./ColorField";
 import { btnGhost, btnPrimary, btnSecondary, card, capsLabel } from "./styles";
 
@@ -78,7 +78,7 @@ export function ButtonForm({ title, initial, maxPosition }: { title: string; ini
   const base = `${ADMIN_PATH}/`;
   const router = useRouter();
   const { run } = useAdmin();
-  const [state, formAction] = useActionState<FormState, FormData>(async (_prev, fd) => {
+  const [state, formAction, saving] = useActionState<FormState, FormData>(async (_prev, fd) => {
     // As datas vão para a API em UTC (o campo mostra o horário de Brasília).
     const fieldErrors: Record<string, string> = {};
     for (const [key, label] of [["startsAt", "início"], ["endsAt", "fim"]] as const) {
@@ -154,7 +154,7 @@ export function ButtonForm({ title, initial, maxPosition }: { title: string; ini
 
   return (
     <>
-    <form action={formAction} className="flex flex-col gap-4" noValidate>
+    <form onSubmit={submitWithoutReset(formAction)} className="flex flex-col gap-4" noValidate>
       {initial.id ? <input type="hidden" name="id" value={initial.id} /> : null}
       <input type="hidden" name="style" value={v.style} />
       <input type="hidden" name="iconChoice" value={iconChoice} />
@@ -177,7 +177,7 @@ export function ButtonForm({ title, initial, maxPosition }: { title: string; ini
         <Link href={base} className={`${btnGhost} hidden sm:inline-flex`}>
           Cancelar
         </Link>
-        <SubmitButton pendingText="Salvando…" className={`${btnPrimary} min-h-11 px-4`}>
+        <SubmitButton pending={saving} pendingText="Salvando…" className={`${btnPrimary} min-h-11 px-4`}>
           Salvar
         </SubmitButton>
       </div>
@@ -484,7 +484,7 @@ export function ButtonForm({ title, initial, maxPosition }: { title: string; ini
       </Section>
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
-        <SubmitButton pendingText="Salvando…" className={`${btnPrimary} min-h-[52px] flex-1 basis-48`}>
+        <SubmitButton pending={saving} pendingText="Salvando…" className={`${btnPrimary} min-h-[52px] flex-1 basis-48`}>
           Salvar botão
         </SubmitButton>
         <Link href={base} className={btnGhost}>

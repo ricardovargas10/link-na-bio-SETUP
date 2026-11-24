@@ -10,7 +10,7 @@ import { ADMIN_PATH, saveSocial, type FormState } from "@/lib/api";
 import { useAdmin } from "./AdminData";
 import { Field, FormAlert, Toggle, inputClass } from "./fields";
 import { IconPicker, choiceToPreview, initialChoice } from "./IconPicker";
-import { SubmitButton } from "./ui";
+import { SubmitButton, submitWithoutReset } from "./ui";
 
 export type SocialFormValues = { id?: string; label: string; url: string; icon: IconRef; visible: boolean };
 
@@ -18,7 +18,7 @@ export function SocialForm({ initial }: { initial: SocialFormValues }) {
   const base = ADMIN_PATH;
   const router = useRouter();
   const { run } = useAdmin();
-  const [state, formAction] = useActionState<FormState, FormData>(async (_prev, fd) => {
+  const [state, formAction, saving] = useActionState<FormState, FormData>(async (_prev, fd) => {
     const r = await run(() => saveSocial(fd));
     if (r.ok) router.push(`${base}/redes/`);
     return r;
@@ -30,7 +30,7 @@ export function SocialForm({ initial }: { initial: SocialFormValues }) {
   const preview = choiceToPreview(iconChoice, initial.icon, fileUrl);
 
   return (
-    <form action={formAction} className="mt-6 flex flex-col gap-6" noValidate>
+    <form onSubmit={submitWithoutReset(formAction)} className="mt-6 flex flex-col gap-6" noValidate>
       {initial.id ? <input type="hidden" name="id" value={initial.id} /> : null}
       <FormAlert error={state.error} />
 
@@ -78,7 +78,7 @@ export function SocialForm({ initial }: { initial: SocialFormValues }) {
       <Toggle name="visible" checked={v.visible} onChange={(x) => setV((o) => ({ ...o, visible: x }))} title="Mostrar na página" description="Desligado, o ícone fica oculto (não é apagado)." />
 
       <div className="mt-2 flex flex-col gap-3">
-        <SubmitButton pendingText="Salvando…" className="min-h-14 rounded-[20px] bg-raisin text-[17px] font-semibold text-white disabled:opacity-70">
+        <SubmitButton pending={saving} pendingText="Salvando…" className="min-h-14 rounded-[20px] bg-raisin text-[17px] font-semibold text-white disabled:opacity-70">
           Salvar rede
         </SubmitButton>
         <Link href={`${base}/redes/`} className="flex min-h-12 items-center justify-center rounded-[20px] text-[15px] font-semibold underline underline-offset-4">

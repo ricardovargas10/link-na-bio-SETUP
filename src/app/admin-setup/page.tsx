@@ -54,7 +54,7 @@ export default function ButtonsPage() {
     return <Alert kind="error">Não consegui carregar os botões agora. Atualize a página em instantes.</Alert>;
   }
 
-  const now = Date.now();
+  const now = data.loadedAt;
   const buttons = data.buttons.map((b) => ({ ...b, status: buttonStatus(b, now) }));
   const count = (s: ButtonStatus) => buttons.filter((b) => b.status === s).length;
   const totalClicks = Object.values(data.clicks).reduce((a, n) => a + n, 0);
@@ -119,11 +119,11 @@ export default function ButtonsPage() {
           <div className="mt-2 grid grid-cols-2 gap-3">
             <div>
               <p className="text-[28px] leading-none font-bold tabular-nums">{data.visits.people.toLocaleString("pt-BR")}</p>
-              <p className="mt-1 text-[13.5px] text-admin-muted">pessoas no total · {data.visits.peopleToday.toLocaleString("pt-BR")} hoje</p>
+              <p className="mt-1 text-[13.5px] text-admin-muted">{data.visits.people === 1 ? "pessoa" : "pessoas"} no total · {data.visits.peopleToday.toLocaleString("pt-BR")} hoje</p>
             </div>
             <div>
               <p className="text-[28px] leading-none font-bold tabular-nums">{data.visits.visits.toLocaleString("pt-BR")}</p>
-              <p className="mt-1 text-[13.5px] text-admin-muted">visitas no total · {data.visits.visitsToday.toLocaleString("pt-BR")} hoje</p>
+              <p className="mt-1 text-[13.5px] text-admin-muted">{data.visits.visits === 1 ? "visita" : "visitas"} no total · {data.visits.visitsToday.toLocaleString("pt-BR")} hoje</p>
             </div>
           </div>
           <p className="mt-3 text-[12.5px] leading-snug text-admin-faint">Pessoas: cada celular ou computador conta uma vez. Visitas: cada vez que alguém abre a página.</p>
@@ -155,7 +155,7 @@ export default function ButtonsPage() {
               <span aria-hidden className="size-1.5 rounded-full bg-[#9a8f9a]" /> {count("oculto")} {count("oculto") > 1 ? "ocultos" : "oculto"}
             </span>
           ) : null}
-          <span className={chip}>{totalClicks.toLocaleString("pt-BR")} cliques</span>
+          <span className={chip}>{totalClicks.toLocaleString("pt-BR")} {totalClicks === 1 ? "clique" : "cliques"}</span>
         </div>
       ) : null}
 

@@ -6,7 +6,7 @@ import { LIMITS, renderFooter, splitHeadline, type PageData } from "@/lib/conten
 import { resetLogo, saveLogo, savePage, type FormState } from "@/lib/api";
 import { useAdmin } from "./AdminData";
 import { Field, FormAlert, inputClass } from "./fields";
-import { SubmitButton } from "./ui";
+import { SubmitButton, submitWithoutReset } from "./ui";
 
 export function TextsForm({ initial }: { initial: PageData }) {
   const { run } = useAdmin();
@@ -73,7 +73,7 @@ export function TextsForm({ initial }: { initial: PageData }) {
 export function LogoForm({ logoMediaId }: { logoMediaId: string | null }) {
   const { run } = useAdmin();
   const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [state, formAction] = useActionState<FormState, FormData>(async (_prev, fd) => {
+  const [state, formAction, saving] = useActionState<FormState, FormData>(async (_prev, fd) => {
     const result = await run(() => saveLogo(fd));
     if (result.ok) setFileUrl(null); // salvo: volta a mostrar o logo do site
     return result;
@@ -84,7 +84,7 @@ export function LogoForm({ logoMediaId }: { logoMediaId: string | null }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <form action={formAction} className="flex flex-col gap-4" noValidate>
+      <form onSubmit={submitWithoutReset(formAction)} className="flex flex-col gap-4" noValidate>
         <FormAlert error={fileError ?? state.error} ok={state.ok && !fileUrl ? "Logo salvo. A página já foi atualizada." : null} />
         <div className="flex min-h-28 items-center justify-center rounded-3xl border-2 border-raisin/10 bg-raisin/5 p-5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -112,7 +112,7 @@ export function LogoForm({ logoMediaId }: { logoMediaId: string | null }) {
           {fileUrl ? "Escolher outra imagem" : "Escolher imagem do logo"}
         </button>
         {fileUrl ? (
-          <SubmitButton pendingText="Salvando…" className="min-h-12 rounded-[18px] bg-raisin text-[16px] font-semibold text-white disabled:opacity-70">
+          <SubmitButton pending={saving} pendingText="Salvando…" className="min-h-12 rounded-[18px] bg-raisin text-[16px] font-semibold text-white disabled:opacity-70">
             Salvar este logo
           </SubmitButton>
         ) : null}

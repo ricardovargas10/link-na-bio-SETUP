@@ -1,0 +1,46 @@
+# Gera o site pronto para a Hostinger e guarda no ramo "hostinger".
+# A Hostinger (hPanel > Avançado > Git) puxa esse ramo para a pasta do subdomínio.
+name: Publicar na Hostinger
+
+on:
+  push:
+    branches: [main, painel-php]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hostinger
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build:hostinger
+
+      - name: Enviar a pasta deploy/ para o ramo hostinger
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir pub && cd pub
+          git init -q -b hostinger
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          # Continua o histórico do ramo (a Hostinger só faz "git pull").
+          if git fetch -q --depth 1 origin hostinger; then git reset -q --soft FETCH_HEAD; fi
+          cp -r ../deploy/. .
+          git add -A
+          if git diff --cached --quiet; then echo "Nada mudou."; exit 0; fi
+          git commit -q -m "Site gerado de ${GITHUB_SHA::7}"
+          git push -q origin hostinger

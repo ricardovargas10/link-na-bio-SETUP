@@ -19,7 +19,12 @@ function setup_config_paths(): array
     $paths = [];
     $docRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
     if ($docRoot !== '') {
-        $paths[] = dirname(rtrim($docRoot, '/\\')) . DIRECTORY_SEPARATOR . 'setup-config.php';
+        $docRoot = rtrim(str_replace('\\', '/', $docRoot), '/');
+        // Num subdomínio a pasta fica dentro de outra pública (.../public_html/links):
+        // a configuração vai para fora de qualquer public_html, onde ninguém acessa pela web.
+        $pos = strpos($docRoot . '/', '/public_html/');
+        $outside = $pos !== false ? substr($docRoot, 0, $pos) : dirname($docRoot);
+        $paths[] = $outside . '/setup-config.php';
     }
     $paths[] = __DIR__ . DIRECTORY_SEPARATOR . 'config.local.php';
     return $paths;

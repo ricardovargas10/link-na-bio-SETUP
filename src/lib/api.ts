@@ -102,8 +102,8 @@ export async function logout(): Promise<void> {
 // ---------- Dados do painel ----------
 
 export async function loadAdminData(): Promise<AdminData | null> {
-  const r = await call<AdminData>("dados");
-  return r.ok && r.data ? r.data : null;
+  const r = await call<Omit<AdminData, "loadedAt">>("dados");
+  return r.ok && r.data ? { ...r.data, loadedAt: Date.now() } : null;
 }
 
 // ---------- Botões ----------

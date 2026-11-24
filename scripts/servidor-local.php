@@ -19,7 +19,7 @@ if (preg_match('#^/media/(img-[a-f0-9]{12})/?$#', $uri, $m)) {
     require $root . '/api/midia.php';
     return true;
 }
-if (preg_match('#^/(icon|apple-icon|opengraph-image)\.png$#', $uri)) {
+if (preg_match('#^/(icon|apple-icon|opengraph-image)(\.png)?$#', $uri)) {
     header('Content-Type: image/png');
     readfile($root . $uri);
     return true;
